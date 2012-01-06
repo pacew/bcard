@@ -7,6 +7,8 @@
 #include <cairo-pdf.h>
 #include <pango/pangocairo.h>
 
+int draw_outline = 1;
+
 /*
  * standard business card size 2 by 3.5 inches
  * ten cards on on 8.5 by 11 paper; 2 cards on each row
@@ -74,8 +76,11 @@ main (int argc, char **argv)
 		
 	outname = "cards.pdf";
 
-	while ((c = getopt (argc, argv, "")) != EOF) {
+	while ((c = getopt (argc, argv, "n")) != EOF) {
 		switch (c) {
+		case 'n':
+			draw_outline = 0;
+			break;
 		default:
 			usage ();
 		}
@@ -128,8 +133,10 @@ draw_card (void)
 
 	set_gray (80);
 
-	cairo_rectangle (cr, 0, 0, CARD_WIDTH, CARD_HEIGHT);
-	cairo_stroke (cr);
+	if (draw_outline) {
+		cairo_rectangle (cr, 0, 0, CARD_WIDTH, CARD_HEIGHT);
+		cairo_stroke (cr);
+	}
 
 	curx = 12;
 	cury = 15;
@@ -149,9 +156,13 @@ draw_card (void)
 	setup_text (mono_font, "atw@mit.edu", &dx, &dy);
 	draw_text (curx, cury);
 
+	cury += 22;
+	setup_text (mono_font, "774-277-9494", &dx, &dy);
+	draw_text (curx, cury);
+
 	set_gray (30);
-	cury += 50;
-	setup_text (main_font, "3 Ames Street", &dx, &dy);
+	cury += 25;
+	setup_text (main_font, "3 Ames Street, Wa203", &dx, &dy);
 	draw_text (curx, cury);
 
 	cury += 15;
@@ -166,9 +177,9 @@ draw_card (void)
 
 
 	
-	curx = 150;
-	cury = 10;
-	scale = .1;
+	curx = 170;
+	cury = 5;
+	scale = .12;
 
 	cairo_save (cr);
 
